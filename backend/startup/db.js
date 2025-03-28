@@ -12,5 +12,6 @@ module.exports = function () {
         process.exit(1);
       }
       console.log("Could not connect to database");
+      console.log(err);
     });
 };
