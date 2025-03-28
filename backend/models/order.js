@@ -1,5 +1,5 @@
 const Joi = require("joi");
-Joi.objectId = require("joi-objectId")(Joi);
+Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
