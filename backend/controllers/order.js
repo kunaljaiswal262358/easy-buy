@@ -1,5 +1,5 @@
 const { Order, validate } = require("../models/order");
-const { Product } = require("../models/Product");
+const { Product } = require("../models/product");
 
 const createOrder = async (req, res) => {
   const { error } = validate(req.body);
