@@ -2,6 +2,10 @@ const config = require("config");
 const { Payment, validate } = require("../models/payment");
 const Stripe = require("stripe");
 
+if(!config.get("stripeSecretKey")) {
+  console.log("Stripe Secret Key is not defined in environment variables!");
+  process.exit(1)
+}
 const stripe = Stripe(config.get("stripeSecretKey"));
 
 const createPayment = async (req, res) => {

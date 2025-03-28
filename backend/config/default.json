@@ -1,7 +1,6 @@
 {
     "port": 5000,
     "mongoUri": "mongodb://127.0.0.1:27017/easy-buy",
-    // "jwtPrivateKey": "kunalJwtprivatekEy",
-    "stripeSecretKey": "sk_test_51QndBaKzQ7BmNfqVLGOFmpcxL0ZpS6cuYUK2XT0DGt1vPcqoEmm9ab7710kxRTZG2AFuBElDDOud2Lvx48P9mq0A00OJmYleHk",
-    "PublishiableKey": "sk_test_51QndBaKzQ7BmNfqVLGOFmpcxL0ZpS6cuYUK2XT0DGt1vPcqoEmm9ab7710kxRTZG2AFuBElDDOud2Lvx48P9mq0A00OJmYleHk"
+    "stripeSecretKey": "",
+    "PublishiableKey": ""
 }

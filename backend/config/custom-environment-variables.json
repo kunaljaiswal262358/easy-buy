@@ -1,4 +1,5 @@
 {
-    "jwtPrivateKey": "jwtPrivateKey",
-    "mongoUri": "MONGO_URI"
+    "jwtPrivateKey": "JWT_PRIVATE_KEY",
+    "mongoUri": "MONGO_URI",
+    "stripeSecretKey": "STRIPE_SECRET_KEY"
 }
