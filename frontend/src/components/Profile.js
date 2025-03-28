@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "./Profile.css";
 
-const Profile = ({user, onLogout}) => {
+const Profile = ({user, onLogout , onProfileChange}) => {
   const navigate = useNavigate()
   const [isChanged, setIsChanged] = useState(false)
   const [preview, setPreview] = useState(null);
@@ -28,6 +28,7 @@ const Profile = ({user, onLogout}) => {
 
   const saveChanges = async () => {
     try {
+      setIsChanged(false)
       const formData = new FormData();
       if(file) formData.append("file", file);
       for (const key in data)
@@ -43,9 +44,10 @@ const Profile = ({user, onLogout}) => {
       toast.success("Changes saved successfully!", {
         autoClose: 1000, 
       });
-      setIsChanged(false)
+      onProfileChange(updated)
       navigate(-1)
     } catch (error) {
+      setIsChanged(true)
       console.log(error);
     }
   };

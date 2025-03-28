@@ -32,6 +32,10 @@ function App() {
     setUser(null)
   }
 
+  const handleProfileChange = (updatedUser) => {
+    setUser(updatedUser)
+  }
+
 
   const handleOrderCheckout = (orderedItems) => {
     let items = JSON.parse(localStorage.getItem("items")) || [];
@@ -118,7 +122,7 @@ function App() {
             {!(user?.isAdmin) && <Route path="/checkout/:id" element={product ? (<Checkout items={[{ product, quantity: 1 }]} onCheckout={handleOrderCheckout} /> ) : ( <Navigate to={"/"} />)} />}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/profile" element={ <Profile user={user} onLogout={handleLogout}  /> } />
+            <Route path="/profile" element={ <Profile user={user} onLogout={handleLogout} onProfileChange={handleProfileChange}  /> } />
             {!(user?.isAdmin) && <Route path="/orders" element={<Order />} />}
             <Route path="/shop" element={<Products user={user} />} />
             {user?.isAdmin && <Route path="/add-product" element={<AddProduct />} />}
