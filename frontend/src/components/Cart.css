@@ -1,0 +1,157 @@
+:root {
+    --color-light: #8b8080;
+    --color-checkout: #222;
+}
+
+.no-items {
+    margin-top: 0.5rem;
+}
+
+.cart {
+    padding: 0 2rem;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid lightgrey;
+}
+
+.cart-card {
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid lightgrey;
+}
+
+.product-image {
+    width: 133px;
+    border: 1px solid lightgrey;
+    border-radius: 14px;
+}
+
+.card__body {
+    margin-left: 2rem;
+    width: 100%;
+}
+
+.product-details {
+    position: relative;
+}
+
+.product-details .title {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+
+.product-details .price {
+    font-size: 1.5rem;
+    padding-right: 1rem;
+    border-right: 1px solid lightgrey;
+}
+
+.product-details .highlighted-price {
+    font-size: 2rem;
+    font-weight: 500;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.avaiblity {
+    font-size: 1.5rem;
+}
+
+.avaiblity {
+    color: rgb(2, 120, 2);
+    padding-left: 0.5rem;
+    font-weight: 500;
+}
+
+.avaiblity .badge {
+    padding: 5px 10px;
+}
+
+.quantity {
+    margin-top: 1.5rem;
+    display: inline-block;
+    padding: 2px 1rem ;
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+    color: var(--color-light);
+    font-size: 1.5rem;
+}
+
+.quantity i {
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.current-quantity {
+    margin: 0 13px;
+}
+
+.btn.delete {
+    float: right;
+    color: var(--color-light);
+    letter-spacing: 0.5px;
+    padding-right: 0;
+}
+
+
+@media screen and (max-width: 768px) {
+    .highlighted-price {
+        display: none;
+    }
+
+    .btn.delete {
+        float: none;
+    }
+}
+
+
+.checkout {
+    margin-top: 2.5rem;
+    color: var(--color-checkout);
+}
+
+.checkout {
+    font-size: 2rem;
+}
+
+.charges {
+    font-weight: 600;
+    text-align: end;
+}
+
+.total-charge {
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-top: 1rem;
+}
+
+.btn.checkout-btn {
+    display: inline-block;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 3.5rem;
+    text-align: center;
+}
+
+.selected-products {
+    font-size: 1.5rem;
+}
+
+.selected-products span {
+    font-weight: 700;
+}
+
+@media screen and (max-width: 768px){
+
+    .charges {
+        margin-top: 3rem;
+        text-align: start;
+    }
+}

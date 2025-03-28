@@ -1,0 +1,53 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 4rem;
+  
+}
+
+.not-found-content {
+  text-align: center;
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.not-found-title {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-weight: bold;
+}
+
+.not-found-message {
+  font-size: 4.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.not-found-message span {
+    color: #35aa35;
+}
+
+.not-found-submessage {
+  font-size: 1.7rem;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.not-found-action {
+  font-size: 1.4rem;
+  color: #b7a5a5;
+}
+
+.not-found-action a {
+    color: #35aa35;
+    text-decoration: none;
+}
+
+
+.not-found-image {
+  width: 100%;
+  border-radius: 5px;
+}

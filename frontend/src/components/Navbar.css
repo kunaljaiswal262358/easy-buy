@@ -1,0 +1,15 @@
+.nav-link {
+    text-decoration: none;
+    color: rgb(57, 52, 52);
+    font-weight: 700;
+}
+
+.user-image {
+    width: 40px;
+    position: relative;
+    top: 9px;
+    height: 43px;
+    width: 43px;
+    border-radius: 50%;
+    object-fit: cover;
+}

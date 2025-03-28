@@ -1,0 +1,5 @@
+.product-edit-image {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

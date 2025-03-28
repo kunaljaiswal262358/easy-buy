@@ -4,9 +4,7 @@ const Footer = () => {
   return (
     <>
       <footer className="footer">
-        <p className="footer-text">
-          &copy; {new Date().getFullYear()} Easy Buy. All rights reserved.
-        </p>
+        <p>Easy Buy 2025. All rights are reserved</p>
       </footer>
     </>
   );

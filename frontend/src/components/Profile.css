@@ -1,0 +1,66 @@
+.profile {
+  margin: 0 1rem;
+}
+
+.profile__header {
+  border: 1px solid rgb(202, 189, 189);
+  border-radius: 4px;
+  padding: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.profile__header img {
+  width: 50px;
+}
+
+.upload {
+  width: 90px;
+}
+
+.profile__header .btn {
+  border: 1px solid rgb(202, 189, 189);
+  color: #222;
+  font-size: 1.5rem;
+}
+
+.profile__body {
+  margin-top: 1rem;
+  border: 1px solid rgb(202, 189, 189);
+  border-radius: 4px;
+  padding: 1.3rem;
+}
+
+.input-group {
+    display: inline-block;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 1rem;
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.input-group input {
+  width: 95%;
+  border: 1px solid rgb(202, 189, 189);
+  border-radius: 20px;
+  padding: 1rem;
+  margin-top: 5px;
+  color: #111;
+}
+
+.btn--save {
+    margin-left: 1rem;
+}
+
+.btn--delete {
+    float: right;
+    margin-right: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .input-group {
+    width: 100%;
+  }
+}

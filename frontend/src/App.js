@@ -1,54 +1,134 @@
-import "./App.css";
-// require('dotenv').config({path: './config.env'});
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useContext } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import axios from "axios";
+import jwt from "jwt-client";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ProductList from "./components/ProductList";
-import SignUp from "./components/SignUp";
-import { useState } from "react";
+import Products from "./components/Products";
 import Login from "./components/Login";
-import Carts from "./components/Carts";
-import Banner from "./components/Banner";
-import Dashboard from "./components/Dashboard";
-import PrivateRoutes from "./components/PrivateRoutes";
-import AuthContext from "./context/AuthContext";
-import ProductForm from "./components/ProductForm";
-import OrderList from "./components/OrderList";
-import OrderDetails from "./components/OrderDetails";
-import ProductDetails from "./components/ProductDetails";
+import Footer from "./components/Footer";
+import SignUp from "./components/SignUp";
+import Profile from "./components/Profile";
+import Product from "./components/Product";
+import Cart from "./components/Cart";
+import Checkout from "./components/Checkout";
+import Order from "./components/MyOrder";
+import AddProduct from "./components/AddProduct";
+import EditProduct from "./components/EditProduct";
+import NotFound from "./components/NotFound";
+import Main from "./components/Main";
+import { ToastContainer } from "react-toastify";
+import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
+import CustomerOrders from "./components/CustomerOrders";
+import CustomerOrder from "./components/CustomerOrder";
 
 function App() {
-  const [filters, setFilters] = useState({brand: "", category: "", minPrice: "", maxPrice: "", rating: "", search: ""});
-  const {user} = useContext(AuthContext)
-  
-  const updateFilters = (userFilters) => {
-    setFilters({...filters,...userFilters});
+  const [items, setItems] = useState([]);
+  const [product, setProduct] = useState(null);
+  const [user, setUser] = useState(null)
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    setUser(null)
+  }
+
+
+  const handleOrderCheckout = (orderedItems) => {
+    let items = JSON.parse(localStorage.getItem("items")) || [];
+    items = items.filter((item) => {
+      const ordered = orderedItems.some(
+        (i) => i.product._id === item.product._id
+      );
+      return !ordered;
+    });
+
+    setItems(items);
+    localStorage.setItem("items", JSON.stringify(items));
   };
+
+  const handleAddToCart = (product) => {
+    const quantity = product.stock > 0 ? 1 : 0;
+    setItems([...items, { product, quantity }]);
+    localStorage.setItem(
+      "items",
+      JSON.stringify([...items, { product, quantity }])
+    );
+  };
+
+  const handleRemoveFromCart = (product) => {
+    const filtered = items.filter((item) => item.product._id !== product._id);
+    setItems(filtered);
+
+    localStorage.setItem("items", JSON.stringify(filtered));
+  };
+
+  const handleBuy = (product) => {
+    setProduct(product);
+  };
+
+  const handleIncreaseQuantity = (product) => {
+    const result = items.map((item) => {
+      if (
+        item.product._id === product._id &&
+        item.product.stock - item.quantity > 0
+      )
+        item.quantity++;
+      return item;
+    });
+    setItems(result);
+    localStorage.setItem("items", JSON.stringify(result));
+  };
+
+  const handleDecreaseQuantity = (product) => {
+    const result = items.map((item) => {
+      if (item.product._id === product._id && item.quantity > 1)
+        item.quantity--;
+
+      return item;
+    });
+    setItems(result);
+    localStorage.setItem("items", JSON.stringify(result));
+  };
+
+  const populateItems = () => {
+    const items = JSON.parse(localStorage.getItem("items")) || [];
+    
+    setItems(items);
+  };
+
+  useEffect(() => {
+    populateItems()
+    const token = localStorage.getItem("token");
+    if (token) {
+      const { _id, isAdmin } = jwt.read(token).claim;
+      setUser({_id, isAdmin})
+    }
+  }, []);
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Router>
-        <Navbar updateFilters={updateFilters} />
+        <Navbar user={user} itemsInCart={items.length} />
+        <main className="main">
         <Routes>
-          <Route path="/" element={<><Banner/><ProductList filters={filters}/></>}></Route>
-          <Route path="/product/:productId" element={<ProductDetails/>}></Route>
-          <Route path="/logIn" element={<Login/>}></Route>
-          <Route path="/signUp" element={<SignUp/>}></Route>
-
-          {/* for users */}
-          {user?.role !== "Admin" ?  <Route path="/carts" element={<Carts/>}></Route> : ""}
-          {user?.role === "User" ? (
-          <Route path="/dashboard" element={
-            <PrivateRoutes><Dashboard/></PrivateRoutes>}>
-          </Route>
-          ) : ""}
-
-          {/* for admin */}
-          {user?.role === "Admin" ? <Route path="/orders/" element={<OrderList/>}></Route> : ""}
-          {user?.role === "Admin" ? <Route path="/order/:orderId" element={<OrderDetails/>}></Route> : ""}
-          {user?.role === "Admin" ? <Route path="/addProduct" element={<ProductForm/>}></Route> : ""}
+            <Route path="/" element={<Main user={user} />} />
+            <Route path="/product/:id" element={<Product user={user} onAddToCart={handleAddToCart} onRemoveFromCart={handleRemoveFromCart} onBuy={handleBuy} />}/>
+            {!(user?.isAdmin) && <Route path="/cart" element={ <Cart items={items} onIncreaseQuantity={handleIncreaseQuantity} onDecreaseQuantity={handleDecreaseQuantity} onRemoveFromCart={handleRemoveFromCart} />} />}
+            {!(user?.isAdmin) && <Route path="/checkout" element={<Checkout items={items} onCheckout={handleOrderCheckout} />}/>}
+            {!(user?.isAdmin) && <Route path="/checkout/:id" element={product ? (<Checkout items={[{ product, quantity: 1 }]} onCheckout={handleOrderCheckout} /> ) : ( <Navigate to={"/"} />)} />}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={ <Profile user={user} onLogout={handleLogout}  /> } />
+            {!(user?.isAdmin) && <Route path="/orders" element={<Order />} />}
+            <Route path="/shop" element={<Products user={user} />} />
+            {user?.isAdmin && <Route path="/add-product" element={<AddProduct />} />}
+            {user?.isAdmin && <Route path="/edit-product/:id" element={<EditProduct />} />}
+            {user?.isAdmin && <Route path="/customer-orders" element={<CustomerOrders />} />}
+            {user?.isAdmin && <Route path="/customer-order/:id" element={<CustomerOrder />} />}
+            <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer/>
+        </main>
+        <Footer />
       </Router>
     </>
   );

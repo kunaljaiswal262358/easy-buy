@@ -1,98 +1,114 @@
-import React, { useState ,useRef} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Joi from "joi";
 
 const SignUp = (props) => {
-  const navigate = useNavigate();
-  const error = useRef(null)
-  const [formData, setFormData] = useState({email: "", password: "", confirmPassword: "", mobile: "",
-    shippingAddress: {fullName: "", address: "", city: "", postalCode: "", country: ""}
-  }); 
+  const navigate = useNavigate()
+  const [user, setUser] = useState({name: "", email: "", password: "",confirmPassword: "" });
+  const [error, setError] = useState({});
 
   const handleChange = (e) => {
-    if(e.target.name === "fullName" || e.target.name === "address" || e.target.name === "city" || e.target.name === "country" || e.target.name==="postalCode")
-      setFormData({...formData,shippingAddress: {...formData.shippingAddress,  [e.target.name]: e.target.value}})
-    else 
-      setFormData({...formData, [e.target.name]: e.target.value})
-  }
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
-  const showError = (msg) => {
-    console.log(msg)
-    error.current.style.display="block";
-    error.current.textContent=msg;
-  }
-  const handleSubmit= async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/api/user/register", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(formData)
+  const validateUser = () => {
+    const schema = Joi.object({
+      name: Joi.string().min(3).required().label("Name"),
+      email: Joi.string().email({ tlds: { allow: false } }).min().required().label("Email"),
+      password: Joi.string().min(5).required().label("Password"),
+      confirmPassword: Joi.valid(Joi.ref("password")).required().label("Password").messages({"any.only": "Passwords do not match.",})
+    });
+
+    return schema.validate(user, { abortEarly: false });
+  };
+
+  const checkError = () => {
+    const error = {};
+    const result = validateUser();
+    if (result.error) {
+      result.error.details.forEach((e, i) => {
+        error[e.path[0]] = e.message;
       });
-      const result = await response.json();
-      
-      //check for errors
-      if(response.status === 400) {
-        showError(result.message);
-      } else {
-        navigate("/login")
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
+      setError(error);
+      return true;
     }
-  }
+
+    setError(error);
+    return false;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (checkError()) return;
+
+    try {
+      const payload = {...user}
+      delete payload.confirmPassword
+      const result = await axios.post(
+        process.env.REACT_APP_API_ENDPOINT + "/users/register",
+        payload
+      );
+      const token = result.headers['x-auth-token'];
+
+      localStorage.setItem("token", token);
+      window.location.href = "/";
+    } catch (error) {
+      console.log(error)
+      setError({generic: error.response.data.message})
+    }
+  };
+
+   useEffect(() => {
+      const token = localStorage.getItem('token')
+      if(token) navigate("/profile")
+    }, [])
+
   return (
-    <>
-      <div className="signUp auth-container">
-        <h2>SignUp</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="input-box">
-            <label htmlFor="fullName">First Name</label>
-            <input type="text" name="fullName" id="fullName" value={formData.shippingAddress.fullName} onChange={handleChange} required/>
-          </div>
-          <div className="input-box">
-            <label htmlFor="email">Email</label>
-            <input className="email" type="email" name="email" id="email" value={formData.email} onChange={handleChange} required />
-          </div>
-          <div className="input-box">
-            <label htmlFor="password">Password</label>
-            <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required/>
-          </div>
-          <div className="input-box">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input type="password" name="confirmPassword" id="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
-          </div>
-          <div className="input-box">
-            <label htmlFor="mobile">Mobile</label>
-            <input type="text" name="mobile" id="mobile" value={formData.mobile} onChange={handleChange} required/>
-          </div>
-          <div className="address">
-            <div className="input-box">
-              <label htmlFor="address">Address</label>
-              <input type="text" id="address" name="address" value={formData.shippingAddress.address} onChange={handleChange} required/>
-            </div>
-            <div className="input-box">
-              <label htmlFor="city">City</label>
-              <input type="text" id="city" name="city" value={formData.shippingAddress.city} onChange={handleChange} required/>
-            </div>
-            <div className="input-box">
-              <label htmlFor="postalCode">Postal Code</label>
-              <input type="text" id="postalCode" name="postalCode" value={formData.shippingAddress.postalCode} onChange={handleChange} required/>
-            </div>
-            <div className="input-box">
-              <label htmlFor="country">Country</label>
-              <input type="text" id="country" name="country" value={formData.shippingAddress.country} onChange={handleChange} required/>
-            </div>
-          </div>
-          <button type="submit" className="submit-btn">
-            Submit
-          </button>
+    <div className="signup">
+      <h2 className="signup__title">Signup</h2>
+      <form onSubmit={(e) => handleSubmit(e)} className="form">
+      <input
+            className="form__input"
+            type="text"
+            name="name"
+            value={user.name}
+            onChange={handleChange}
+            placeholder="Name"
+          />
+          {error.name && <p className="form__error">{error.name}</p>}
+          <input
+            className="form__input"
+            type="text"
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            placeholder="Email"
+          />
+          {error.email && <p className="form__error">{error.email}</p>}
+          <input
+            className="form__input"
+            type="password"
+            name="password"
+            value={user.password}
+            onChange={handleChange}
+            placeholder="Password"
+          />
+          {error.password && <p className="form__error">{error.password}</p>}
+          <input
+            className="form__input"
+            type="password"
+            name="confirmPassword"
+            value={user.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm Password"
+          />
+          {error.confirmPassword && <p className="form__error">{error.confirmPassword}</p>}
+          {error.generic && <p className="form__error">{error.generic}</p>}
+          <button className="btn btn--primary form__button">Signup</button>
+          <Link className="auth-switch" to={"/login"}>Already have an account? Login</Link>
         </form>
-        <div ref={error} className="error">
-          
-        </div>
       </div>
-    </>
   );
 };
 

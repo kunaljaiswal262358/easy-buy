@@ -1,134 +1,64 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import React from "react";
-import { Link, useNavigate , useLocation } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
-import FilterProduct from "./FilterProduct";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import "./Navbar.css"
 
-function Navbar({ updateFilters }) {
-  const { user, logout } = useContext(AuthContext);
-  const [search, setSearch] = useState("");
-  const navigate = useNavigate();
-  const location = useLocation()
-  const [display, setDisplay] = useState(true);
-  const navLinks = useRef(null);
+function Navbar({user, itemsInCart}) {
+  const [image, setImage] = useState(null)
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevent form submission (optional)
-      handleSearch();
+  const toggleLinks = (e) => {
+    e.target.classList.toggle("fa-xmark");
+    document
+      .getElementsByClassName("collapsible")[0]
+      .classList.toggle("collapsible--expanded");
+  };
+
+  const fetchImage = async (id) => {
+    try {
+      const {data} = await axios.get(process.env.REACT_APP_API_ENDPOINT+ "/users/profile/"+ id)
+      setImage(data.image)
+    } catch(error) {
+      console.log(error)
     }
-  };
-
-  const handleSearch = () => {
-    updateFilters({ search: search });
-  };
-
-  const handleClick = () => {
-    if (display) {
-      navLinks.current.style.display = "flex";
-      setDisplay(false);
-    } else {
-      navLinks.current.style.display = "none";
-      setDisplay(true);
-    }
-  };
-
-  const doLogout = () => {
-    logout();
-    setTimeout(() => {
-      navigate("/logIn");
-    }, 0);
   }
 
+  useEffect(() => {
+    if(user) fetchImage(user._id)
+  }, [user])
+  
+
   return (
-    <>
-      <header>
-        <nav>
-          <div className="logo">
-            <Link to={"/"} >
-              <img
-                src="/images/easy-buy-logo.png"
-                alt="an image of easy buy logo"
-              />
+    <nav className="nav">
+      <Link to={"/"}>
+        <img className="logo-image" src="/images/logo.png" alt="an image of logo" />
             </Link>
-          </div>
-          <ul>
-            <li className="search">
-              <input
-                type="text"
-                name="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="search"
-              />
-              <i
-                onClick={handleSearch}
-                className="fa-solid fa-magnifying-glass"
-              ></i>
-            </li>
-            <li>
-              <FilterProduct updateFilters={updateFilters} />
-            </li>
-            <ul ref={navLinks} className="nav-links">
-              <li>
-                <Link to={"/"} className={location.pathname === "/" ? "active" : ""}>Home</Link>
-              </li>
-
-              {user?.role === "Admin" ? (
-                <li>
-                  <Link to={"/addProduct"} className={location.pathname === "/addProduct" ? "active" : ""}>Add Product</Link>
-                </li>
-              ) : (
-                <li>
-                  <Link to={"/carts"} className={location.pathname === "/carts" ? "active" : ""}>Carts</Link>
-                </li>
-              )}
-              {user?.role === "User" ? (
-                <li>
-                  <Link to={"/dashboard"} className={location.pathname === "/dashboard" ? "active" : ""}>Dashboard</Link>
-                </li>
-              ) : (
-                ""
-              )}
-              {user?.role === "Admin" ? (
-                <li>
-                <Link to={"/orders"} className={location.pathname === "/orders" ? "active" : ""}>Orders</Link>
-              </li>
-              ) : (
-                ""
-              )}
-              {user ? (
-                <li>
-                  <Link onClick={()=>doLogout()} >Logout</Link>
-                </li>
-              ) : (
-                <li>
-                  <Link to={"/logIn"} className={location.pathname === "/logIn" ? "active" : ""}>Login</Link>
-                </li>
-              )}
-              {user ? (
-                ""
-              ) : (
-                <li>
-                  <Link to={"/signUp"} className={location.pathname === "/signUp" ? "active" : ""}>SignUp</Link>
-                </li>
-              )}
-              <li />
+      <ul className="list list--inline nav--list collapsible">
+        <li className="list__item"><Link className="nav-link"  to={"/"}>Home</Link></li>
+        <li className="list__item"><Link className="nav-link" to={"/shop"} >Shop</Link></li>
+        {!(user?.isAdmin) && <li className="list__item"><Link className="nav-link" to={"/orders"} >Orders</Link></li>}
+        {user?.isAdmin && <li className="list__item"><Link className="nav-link" to={"/customer-orders"} >See Orders</Link></li>}
+        {!(user?.isAdmin) && <li className="list__item"><Link className="nav-link"  to={"/cart"}>Cart {itemsInCart > 0 && <span>({itemsInCart})</span>}</Link></li>}
+        {user?.isAdmin && <li className="list__item"><Link className="nav-link"  to={"/add-product"}>Add Product</Link></li>}
             </ul>
-            <li onClick={() => handleClick()} className="hamburger">
-              {display ? (
-                <i class="fa-solid fa-bars"></i>
-              ) : (
-                <i class="fa-solid fa-xmark"></i>
-              )}
-            </li>
-            <li></li>
-          </ul>
+      <div className="btn-bars-container">
+        <span className="auth-btns">
+          {!user && (
+            <>
+              <Link className="btn btn--link" to={"/login"}>
+                Log in
+              </Link>
+              <Link className="btn btn--outline btn--link" to={"/signup"}>
+                Sign up
+              </Link>
+            </>
+          )}
+          {user && <Link to={"/profile"}><img className="user-image" src={image? image: "/images/user.png"} alt="User image"/></Link> }
+        </span>
+        <span className="nav__bars toggler">
+          <i onClick={(e) => toggleLinks(e)} className="fa-solid fa-bars"></i>
+        </span>
+      </div>
         </nav>
-
-      </header>
-    </>
   );
 }
 

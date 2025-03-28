@@ -1,0 +1,13 @@
+.order-process-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+
+.order-process-btn {
+  border: 1px solid lightgrey;
+  padding: 2px;
+  cursor: pointer;
+}
+  
