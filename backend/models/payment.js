@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Joi = require('Joi')
+const Joi = require('joi')
 
 const paymentSchema = new mongoose.Schema({
     paymentId: {type: String, required: true},
