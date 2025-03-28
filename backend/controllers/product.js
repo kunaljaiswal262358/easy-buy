@@ -1,4 +1,4 @@
-const { Product, validate } = require("../models/Product");
+const { Product, validate } = require("../models/product");
 
 const getProducts = async (req, res) => {
   let query = createQuery(req.query);
