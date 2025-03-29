@@ -32,10 +32,10 @@ const validateProduct = function (product) {
     brand: Joi.string().required().min(3),
     stock: Joi.number().min(0).required(),
     ratings: Joi.number().min(0).max(5),
-    // image: Joi.object({
-    //   data: Joi.string().required(),
-    //   contentType: Joi.string().required()
-    // }).required()
+    image: Joi.object({
+      data: Joi.string().required(),
+      contentType: Joi.string().required()
+    }).required()
   })
 
   return schema.validate(product)
