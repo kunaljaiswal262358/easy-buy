@@ -30,8 +30,7 @@ const getOrders = async (req, res) => {
   const status = req.query.status
   let query = {}
   if(status) query.orderStatus = status
-  console.log(status)
-
+  
   const pageSize = 10;
   const currentPage = Number(req.query.page) || 1
   const skip = (currentPage - 1) * pageSize
@@ -39,16 +38,18 @@ const getOrders = async (req, res) => {
   let orders = await Order.find(query)
     .skip(skip)
     .limit(pageSize)
-    .populate("items.product")
+    .populate({
+      path: "items.product",
+      select: "-image" 
+    })
     .populate("paymentId")
-    .populate("customerId");
+    .populate({
+      path: "customerId",
+      select: "-password -image"
+    });
   
-  const sanitizedOrders = orders.map(order => {
-    const customerId = order.customerId.toObject(); 
-    delete customerId.password; 
-    return { ...order.toObject(), customerId };
-  });
-  res.send(sanitizedOrders);
+   
+  res.send(orders);
 };
 
 const getOrderById = async (req, res) => {
