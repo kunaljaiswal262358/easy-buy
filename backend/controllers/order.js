@@ -48,7 +48,7 @@ const getOrders = async (req, res) => {
     delete customerId.password; 
     return { ...order.toObject(), customerId };
   });
-  res.json(sanitizedOrders);
+  res.send(sanitizedOrders);
 };
 
 const getOrderById = async (req, res) => {
