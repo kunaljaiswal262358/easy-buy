@@ -49,7 +49,8 @@ const getOrders = async (req, res) => {
     .populate({
       path: "customerId",
       select: "-password -image"
-    });
+    })
+    .sort({ _id: -1 });
   
    
   res.send({orders,totalPages: Math.ceil(totalOrders / pageSize)});
@@ -73,7 +74,8 @@ const getOrderByCustomerId = async (req, res) => {
   
   const order = await Order.find(filter)
     .populate("items.product")
-    .populate("paymentId");
+    .populate("paymentId")
+    .sort({ _id: -1 });
 
   res.status(200).json(order);
 };
