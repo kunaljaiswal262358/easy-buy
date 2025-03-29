@@ -35,6 +35,8 @@ const getOrders = async (req, res) => {
   const currentPage = Number(req.query.page) || 1
   const skip = (currentPage - 1) * pageSize
 
+  const totalOrders = await Order.countDocuments(query);
+
   let orders = await Order.find(query)
     .skip(skip)
     .limit(pageSize)
@@ -49,7 +51,7 @@ const getOrders = async (req, res) => {
     });
   
    
-  res.send(orders);
+  res.send({orders,totalPages: Math.ceil(totalOrders / pageSize)});
 };
 
 const getOrderById = async (req, res) => {
