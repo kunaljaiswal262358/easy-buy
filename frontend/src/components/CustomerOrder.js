@@ -9,18 +9,24 @@ const CustomerOrder = () => {
     const navigate = useNavigate()
     const [order, setOrder] = useState({})
     const [show, setShow] = useState("customer")
+    const [loading, setLoading] = useState(false)
+    const [cancelling, setCancelling] = useState(false)
 
     const handleShowChange = (e) => {
-        setShow(e.target.value)
+      setShow(e.target.value)
     }
 
     const handleStatusChange = async (status) => {
+      if(status === 'Cancelled') setCancelling(true)
+      else  setLoading(true)
         try {
             const {data} = await axios.put(process.env.REACT_APP_API_ENDPOINT+ "/orders/updateStatus/"+id,{status})
             setOrder(data)
-        } catch (error) {
+          } catch (error) {
             console.log(error)
-        }
+          }
+      setLoading(false)
+      setCancelling(false)
     }
 
 
@@ -117,9 +123,8 @@ const CustomerOrder = () => {
             <span>Order Placed</span>
             <span>{getDate(order.createdAt)}</span>
           </div>}
-          {!(order?.orderStatus === "Cancelled" || order?.orderStatus === "Delivered") && <button onClick={()=>handleStatusChange("Cancelled")} className="cancel-btn">Cancel Order</button>}
+          {!(order?.orderStatus === "Cancelled" || order?.orderStatus === "Delivered") && <button onClick={()=>handleStatusChange("Cancelled")} disabled={cancelling} className="cancel-btn">{(cancelling) ? "Cancelling" : "Cancel Order"}</button>}
         </div>
-
         <div className="order-summary">
           <h3>Item Summary</h3>
           <div className="summary-header">
@@ -144,8 +149,8 @@ const CustomerOrder = () => {
       </div>
 
       <div className="card-footer">
-        {order?.orderStatus === "Pending" && <button onClick={()=>handleStatusChange("Processing")} className="home-btn">Process Order</button>}
-        {order?.orderStatus === "Processing" && <button onClick={()=>handleStatusChange("Delivered")} className="home-btn">Mark as Deliverd</button>}
+        {order?.orderStatus === "Pending" && <button onClick={()=>handleStatusChange("Processing")} disabled={loading} className="home-btn">{loading ? "Processing..." : "Process Order"}</button>}
+        {order?.orderStatus === "Processing" && <button onClick={()=>handleStatusChange("Delivered")} disabled={loading} className="home-btn">{loading ? "Processing..." : "Mark as Deliverd"}</button>}
         {/* <button className="home-btn">Back to Home</button> */}
       </div>
     </div>

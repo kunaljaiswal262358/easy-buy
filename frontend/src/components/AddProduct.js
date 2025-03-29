@@ -4,7 +4,7 @@ import Joi from "joi";
 import "./AddProduct.css";
 import { toast } from "react-toastify";
 
-const AddProduct = () => {
+const AddProduct = ({onAddProduct}) => {
   const image = useRef()
   const [error, setError] = useState({})
   const [product, setProduct] = useState({
@@ -16,14 +16,17 @@ const AddProduct = () => {
     stock: "",
     image: null,
   });
+  const [buttonDisabled, setButtonDisabled] = useState(true)
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
+    setButtonDisabled(false)
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setProduct({ ...product, image: selectedFile });
+    setButtonDisabled(false)
   };
 
   const validateProduct = () => {
@@ -64,31 +67,25 @@ const AddProduct = () => {
 
   const handleSave = async () => {
     if(checkForErrors()) return;
+    setButtonDisabled(true)
     
     const validProduct = convertInValidProduct(product)
-    const formData = new FormData()
-    for (const key in validProduct) 
-     formData.append(key, validProduct[key])
-    
-    try {
-      const result = await axios.post(
-        `${process.env.REACT_APP_API_ENDPOINT}/products`, formData,
-      );
-      setProduct({
-        name: "",
-        description: "",
-        price: "null",
-        category: "",
-        brand: "",
-        stock: "",
-        image: null,
-      })
-      image.current.value = ""
-      toast.success("Product added successfully!")
-    } catch (error) {
-      console.log(error);
-      setError({generic: "Duplicate product name"})
+    const error = await onAddProduct(validProduct)
+    if(error){
+      setError({generic: "Duplicate product name"});
+      return;
     }
+    
+    setProduct({
+      name: "",
+      description: "",
+      price: "null",
+      category: "",
+      brand: "",
+      stock: "",
+      image: null,
+    })
+    image.current.value = ""
   };
 
   return (
@@ -188,7 +185,7 @@ const AddProduct = () => {
       </div>
 
       <div className="form-actions">
-        <button onClick={handleSave} className="primary-button">
+        <button disabled={buttonDisabled} onClick={handleSave} className={`primary-button ${buttonDisabled ? "disabled" : ""}`}>
           Save Product
         </button>
         <button className="secondary-button">Cancel</button>

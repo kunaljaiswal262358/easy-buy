@@ -27,29 +27,10 @@ const Profile = ({user, onLogout , onProfileChange}) => {
   };
 
   const saveChanges = async () => {
-    try {
-      setIsChanged(false)
-      const formData = new FormData();
-      if(file) formData.append("file", file);
-      for (const key in data)
-        formData.append(key,data[key])
-      
-      const {data: updated} = await axios.post(
-        process.env.REACT_APP_API_ENDPOINT + "/users/profile/" + user._id,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      toast.success("Changes saved successfully!", {
-        autoClose: 1000, 
-      });
-      onProfileChange(updated)
-      navigate(-1)
-    } catch (error) {
-      setIsChanged(true)
-      console.log(error);
-    }
+    setIsChanged(false)
+    navigate(-1)
+    
+    onProfileChange({...data, file});
   };
 
   const logout = () => {
@@ -76,28 +57,10 @@ const Profile = ({user, onLogout , onProfileChange}) => {
     if(user.image) setImage(user.image)
   }
 
-  const fetchUserData = async (id) => {
-    try {
-      const {data} = await axios.get(process.env.REACT_APP_API_ENDPOINT+ "/users/profile/"+id)
-      return data;
-    } catch(error) {
-      console.log(error)
-    }
-  }
-
-  const populateUserData = async (id) => {
-   try {
-    const userData = await fetchUserData(id)
-    updateUserData(userData);
-   } catch(error) {
-    console.log(error)
-   }
-  }
-
   useEffect(() => {
     
     if(user) 
-      populateUserData(user._id)
+      updateUserData(user)
     
   }, [user]);
 

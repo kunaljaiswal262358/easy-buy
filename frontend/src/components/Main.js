@@ -2,11 +2,11 @@ import React from 'react'
 import Hero from './Hero'
 import Products from './Products'
 
-const Main = ({user}) => {
+const Main = ({user, products}) => {
   return (
     <div>
       <Hero />
-      <Products user={user} />
+      <Products user={user} products={products} />
     </div>
   )
 }

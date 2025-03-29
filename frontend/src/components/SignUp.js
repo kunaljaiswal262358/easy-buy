@@ -14,8 +14,8 @@ const SignUp = (props) => {
 
   const validateUser = () => {
     const schema = Joi.object({
-      name: Joi.string().min(3).required().label("Name"),
-      email: Joi.string().email({ tlds: { allow: false } }).min().required().label("Email"),
+      name: Joi.string().required().label("Name"),
+      email: Joi.string().email({ tlds: { allow: false } }).required().label("Email"),
       password: Joi.string().min(5).required().label("Password"),
       confirmPassword: Joi.valid(Joi.ref("password")).required().label("Password").messages({"any.only": "Passwords do not match.",})
     });

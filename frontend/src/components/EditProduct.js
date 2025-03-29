@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import "./AddProduct.css";
 import "./EditProduct.css";
 
-const EditProduct = () => {
+const EditProduct = ({products , onEdit}) => {
   const navigate = useNavigate();
   const image = useRef();
   const { id } = useParams();
@@ -22,6 +22,7 @@ const EditProduct = () => {
     stock: "",
     image: null,
   });
+  const [selected, setSelected] = useState(null)
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -86,26 +87,17 @@ const EditProduct = () => {
     if (checkForErrors()) return;
 
     const validProduct = convertInValidProduct(product);
-    const formData = new FormData();
-    for (const key in validProduct) formData.append(key, validProduct[key]);
-    try {
-      const result = await axios.put(
-        `${process.env.REACT_APP_API_ENDPOINT}/products/${id}`,
-        formData
-      );
-      toast.success("Product Edited successfully!");
-      navigate("/product/" + id);
-    } catch (error) {
-      console.log(error);
-    }
+    
+    setIsChanged(false)
+    navigate("/product/" + id); 
+    onEdit({...selected, ...validProduct, image: preview})
   };
 
   const fetchProduct = async () => {
     try {
-      const { data: product } = await axios.get(
-        process.env.REACT_APP_API_ENDPOINT + "/products/" + id
-      );
-      const imageFile = await base64ToFile(product.image, "image.png")
+      const product = products.find(p => p._id === id);
+       if(!product) return navigate("/");
+      const imageFile = await base64ToFile(product.image, "image.png");
       setProduct({
         name: product.name,
         description: product.description,
@@ -115,6 +107,7 @@ const EditProduct = () => {
         stock: product.stock === 0 ? "" : product.stock,
         image: imageFile,
       });
+      setSelected(product)
       setPreview(product.image);
     } catch(error) {
       if(error.response.status === 400 || error.response.status === 500) navigate("/")
@@ -123,7 +116,7 @@ const EditProduct = () => {
 
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [products]);
 
   return (
     <div className="product-form">

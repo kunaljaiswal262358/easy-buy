@@ -13,10 +13,6 @@ const Cart = ({items, onIncreaseQuantity, onDecreaseQuantity, onRemoveFromCart})
     return totalPrice + deliveryCharges;
   };
 
-  const storeInLocalDB = (items) => {
-    localStorage.setItem("items", JSON.stringify(items));
-  };
-
   const selectedItems = () => {
     return items.filter(item => item.product.stock > 0)
   }

@@ -13,17 +13,8 @@ function Navbar({user, itemsInCart}) {
       .classList.toggle("collapsible--expanded");
   };
 
-  const fetchImage = async (id) => {
-    try {
-      const {data} = await axios.get(process.env.REACT_APP_API_ENDPOINT+ "/users/profile/"+ id)
-      setImage(data.image)
-    } catch(error) {
-      console.log(error)
-    }
-  }
-
   useEffect(() => {
-    if(user) fetchImage(user._id)
+    if(user) setImage(user.image)
   }, [user])
   
 

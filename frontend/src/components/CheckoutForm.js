@@ -45,6 +45,7 @@ const CheckoutForm = ({items , onCheckout}) => {
       };
       await axios.post(process.env.REACT_APP_API_ENDPOINT + "/orders", payload);
       onCheckout(items)
+      toast.success("Order placed successfully!");
       navigate("/orders")
     } catch (error) {
       console.log(error);
@@ -82,27 +83,26 @@ const CheckoutForm = ({items , onCheckout}) => {
         }
       );
 
-      setLoading(false);
-
+      
       if (confirmPayment.error) {
         console.error(confirmPayment.error);
         toast.error("Payment failed!");
       } else {
-        toast.info("Payment successful!");
+        
 
         const result = await axios.post(
           process.env.REACT_APP_API_ENDPOINT + "/payments/success",
           { paymentId: confirmPayment.paymentIntent.id, status: "Success" }
         );
-
+        
         const paymentId = result.data._id;
         const customerId = user._id
-        placeOrder(customerId, paymentId);
-        navigate("/");
+        await placeOrder(customerId, paymentId);
       }
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const getAmount = () => {

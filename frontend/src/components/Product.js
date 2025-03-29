@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "./Product.css";
 
-const Product = ({user, onAddToCart, onRemoveFromCart, onBuy}) => {
+const Product = ({user, products, onAddToCart, onRemoveFromCart, onBuy, onProductDelete}) => {
   const navigate = useNavigate()
   const { id } = useParams();
   const [isInCart, setIsInCart] = useState(false)
@@ -15,13 +15,8 @@ const Product = ({user, onAddToCart, onRemoveFromCart, onBuy}) => {
   }
 
   const handleDelete = async () => {
-    try {
-      await axios.delete(process.env.REACT_APP_API_ENDPOINT+"/products/"+id);
-      toast.success("Product deleted!")
-      navigate('/')
-    } catch(error) {
-      console.log(error)
-    }
+    navigate("/")
+    onProductDelete(product)
   }
 
   const checkForInCart = () => {
@@ -29,16 +24,10 @@ const Product = ({user, onAddToCart, onRemoveFromCart, onBuy}) => {
     setIsInCart(items.some(item => item.product._id === id))
   }
 
-  const fetchProduct = async () => {
-    try {
-      const result = await axios.get(
-        process.env.REACT_APP_API_ENDPOINT + "/products/" + id
-      );
-      setProduct(result.data);
-    } catch(error) {
-      if(error.response.status === 404)  return navigate("/")
-      console.log(error)
-    }
+  const populateProduct = () => {
+    const product = products.find(p => p._id === id)
+    if(!product) return navigate("/")
+    setProduct(product)
   };
 
   useEffect(() => {
@@ -47,7 +36,7 @@ const Product = ({user, onAddToCart, onRemoveFromCart, onBuy}) => {
   
 
   useEffect(() => {
-    fetchProduct();
+    populateProduct();
     checkForInCart()
   }, []);
 

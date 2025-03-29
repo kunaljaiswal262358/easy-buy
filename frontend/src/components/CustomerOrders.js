@@ -10,7 +10,8 @@ const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 5;
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleFilterChange = (e) => {
     setCurrentPage(1)
@@ -29,11 +30,6 @@ const CustomerOrders = () => {
     setCurrentPage(currentPage + 1);
   };
 
-   const getLimitedOrders = () => {
-      const startIndex = (currentPage - 1) * pageSize;
-      return _.slice(orders, startIndex, startIndex + pageSize);
-    };
-
   const getDate = (isoString) => {
     const date = new Date(isoString);
     const month = date.toLocaleString("en-US", { month: "long" });
@@ -44,8 +40,12 @@ const CustomerOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const {data } = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/orders?status="+status)
-    setOrders(data)
+      setLoading(true);
+      const {data } = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/orders?status="+status+"&page="+currentPage)
+
+      setOrders(data.orders)
+      setTotalPages(data.totalPages)
+      setLoading(false);
     } catch(error) {
       console.log(error)
     }
@@ -53,7 +53,11 @@ const CustomerOrders = () => {
 
   useEffect(() => {
     fetchOrders()
-  }, [status])
+  }, [status,currentPage])
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
   
   return (
     <div className="order-container">
@@ -88,7 +92,9 @@ const CustomerOrders = () => {
         </div>
       </div>
 
-      <div className="order-table-container">
+      {!loading && totalPages === 0 && <p>There is no orders</p>}
+      {loading && <p>Loading orders, please wait...</p>}
+      {!loading && totalPages > 0 && <div className="order-table-container">
         <table className="order-table">
           <thead>
             <tr>
@@ -103,7 +109,7 @@ const CustomerOrders = () => {
             </tr>
           </thead>
           <tbody>
-            {getLimitedOrders().map((order) => (
+            {orders.map((order) => (
               <tr key={order._id} className='order-item'>
                 <td data-label="ID Order">{order._id}</td>
                 <td data-label="Date">{getDate(order.createdAt)}</td>
@@ -131,13 +137,13 @@ const CustomerOrders = () => {
         <button onClick={handlePreviousChange} disabled={currentPage === 1} className="prev" > Prev</button>
         <div className="numbers">
           {Array.from(
-            { length: Math.ceil(orders.length / pageSize) },
+            { length: totalPages },
             (_, i) => (<button onClick={() => handleNumberChange(i + 1)} key={i} className={currentPage === i + 1 ? "page-number active" : "page-number"}> {i + 1} </button>)
           )}
         </div>
-        <button onClick={handleNextChange} disabled={currentPage ===  Math.ceil(orders.length / pageSize)} className="next" >Next</button>
+        <button onClick={handleNextChange} disabled={currentPage ===  totalPages} className="next" >Next</button>
       </div>
-      </div>
+      </div>}
     </div>
   );
 };
