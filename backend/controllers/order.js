@@ -18,7 +18,8 @@ const createOrder = async (req, res) => {
   items.forEach(async item => {
     const id = item.product;
     const product = await Product.findById(id)
-    product.stock -= item.quantity;
+    if((product.stock - item.quantity) >= 0)
+      product.stock -= item.quantity;
     await product.save()
   })
 

@@ -5,11 +5,11 @@ Joi.objectId = require('joi-objectid')(Joi)
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true , unique: true },
   description: { type: String},
-  price: { type: Number, required: true },
+  price: { type: Number, required: true , min: 0},
   category: { type: String, enum: ['Electronics', 'Furniture', 'Clothing', 'Shoes'], required: true },
   brand: { type: String, required: true },
-  stock: { type: Number, required: true, default: 0 },
-  ratings: { type: Number, default: 0 },
+  stock: { type: Number, required: true, default: 0, min: 0 },
+  ratings: { type: Number, default: 0, min: 0 },
   image: { 
     type: {
       data: String,        
