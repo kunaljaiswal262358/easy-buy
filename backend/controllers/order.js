@@ -33,7 +33,7 @@ const getOrders = async (req, res) => {
   console.log(status)
 
   const pageSize = 10;
-  const currentPage = req.query.page || 1
+  const currentPage = Number(req.query.page) || 1
   const skip = (currentPage - 1) * pageSize
 
   let orders = await Order.find(query)
