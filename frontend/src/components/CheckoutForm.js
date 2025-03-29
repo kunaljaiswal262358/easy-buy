@@ -46,7 +46,7 @@ const CheckoutForm = ({items , onCheckout}) => {
       await axios.post(process.env.REACT_APP_API_ENDPOINT + "/orders", payload);
       onCheckout(items)
       toast.success("Order placed successfully!");
-      navigate("/orders")
+      window.location.href= "/orders"
     } catch (error) {
       console.log(error);
     }

@@ -12,8 +12,10 @@ const MyOrder = () => {
   const pageSize = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [status, setStatus] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleNumberChange = (number) => {
+    console.log(number)
     setCurrentPage(number);
   };
 
@@ -44,6 +46,7 @@ const MyOrder = () => {
   };
 
   const fetchOrders = async (id) => {
+    setLoading(true)
     try {
       const { data } = await axios.get(
         process.env.REACT_APP_API_ENDPOINT + "/orders/customer/" + id + "?status=" + status
@@ -52,6 +55,7 @@ const MyOrder = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false)
   };
 
   useEffect(() => {
@@ -67,7 +71,10 @@ const MyOrder = () => {
         <h1>Order</h1>
       </div>
 
-      <div className="order-filters">
+      
+      {loading && <p className="loading-message">Loading orders, please wait..</p>}
+      {!loading && <>
+        <div className="order-filters">
         <div className="filter-group">
           <button onClick={handleFilterChange} value={""} className={status === "" ? "filter-label  filter-btn" : "filter-option filter-btn"}>All</button>
           <button onClick={handleFilterChange} value={"Pending"}  className={status === "Pending" ? "filter-label filter-btn" : " filter-option filter-btn "}>Pending</button>
@@ -99,8 +106,8 @@ const MyOrder = () => {
                 </td>
                 <td data-label="Items">
                   <ol>
-                    {order.items.map((item) => (
-                      <li key={item.product._id}>{item.product.name}</li>
+                    {order?.items.map((item) => (
+                      <li key={item.product?._id}>{item.product?.name}</li>
                     ))}
                   </ol>
                 </td>
@@ -133,6 +140,7 @@ const MyOrder = () => {
         </div>
         <button onClick={handleNextChange} disabled={currentPage ===  Math.ceil(orders.length / pageSize)} className="next" >Next</button>
       </div>
+      </>}
     </div>
   );
 };

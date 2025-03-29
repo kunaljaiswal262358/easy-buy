@@ -250,3 +250,7 @@ h3 {
   background-color: red;
   color: #fff;
 }
+
+.loading-message {
+  font-size: 1.5rem;
+}

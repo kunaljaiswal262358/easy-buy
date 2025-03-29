@@ -16,6 +16,7 @@ const AddProduct = ({onAddProduct}) => {
     stock: "",
     image: null,
   });
+  const [loading, setLoading] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(true)
 
   const handleChange = (e) => {
@@ -68,6 +69,7 @@ const AddProduct = ({onAddProduct}) => {
   const handleSave = async () => {
     if(checkForErrors()) return;
     setButtonDisabled(true)
+    setLoading(true)
     
     const validProduct = convertInValidProduct(product)
     const error = await onAddProduct(validProduct)
@@ -86,6 +88,7 @@ const AddProduct = ({onAddProduct}) => {
       image: null,
     })
     image.current.value = ""
+    setLoading(false)
   };
 
   return (
@@ -185,8 +188,8 @@ const AddProduct = ({onAddProduct}) => {
       </div>
 
       <div className="form-actions">
-        <button disabled={buttonDisabled} onClick={handleSave} className={`primary-button ${buttonDisabled ? "disabled" : ""}`}>
-          Save Product
+        <button disabled={buttonDisabled || loading} onClick={handleSave} className={`primary-button ${buttonDisabled || loading ? "disabled" : ""}`}>
+          {loading ? "Processing..." : "Save Product"}
         </button>
         <button className="secondary-button">Cancel</button>
       </div>

@@ -61,27 +61,15 @@ const CustomerOrders = () => {
   
   return (
     <div className="order-container">
-      <div className="order-header">
+      {/* <div className="order-header">
         <div className="order-stats">
           <div className="stat-item">
             <h3>Total Orders</h3>
-            <p>3210</p>
-          </div>
-          <div className="stat-item">
-            <h3>Ordered items over time</h3>
-            <p>3210</p>
-          </div>
-          <div className="stat-item">
-            <h3>Returns</h3>
-            <p>3210</p>
-          </div>
-          <div className="stat-item">
-            <h3>Fulfilled orders over time</h3>
-            <p>3210</p>
+            <p>{(totalPages - 1) * 10}+</p>
           </div>
         </div>
         <button className="more-action-btn">More Action</button>
-      </div>
+      </div> */}
 
       <div className="order-filters">
         <div className="filter-group">
@@ -93,7 +81,7 @@ const CustomerOrders = () => {
       </div>
 
       {!loading && totalPages === 0 && <p>There is no orders</p>}
-      {loading && <p>Loading orders, please wait...</p>}
+      {loading && <p className='loading-message'>Loading orders, please wait...</p>}
       {!loading && totalPages > 0 && <div className="order-table-container">
         <table className="order-table">
           <thead>

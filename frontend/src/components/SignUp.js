@@ -7,6 +7,7 @@ const SignUp = (props) => {
   const navigate = useNavigate()
   const [user, setUser] = useState({name: "", email: "", password: "",confirmPassword: "" });
   const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -41,6 +42,7 @@ const SignUp = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (checkError()) return;
+    setLoading(true)
 
     try {
       const payload = {...user}
@@ -57,6 +59,7 @@ const SignUp = (props) => {
       console.log(error)
       setError({generic: error.response.data.message})
     }
+    setLoading(false)
   };
 
    useEffect(() => {
@@ -105,7 +108,7 @@ const SignUp = (props) => {
           />
           {error.confirmPassword && <p className="form__error">{error.confirmPassword}</p>}
           {error.generic && <p className="form__error">{error.generic}</p>}
-          <button className="btn btn--primary form__button">Signup</button>
+          <button disabled={loading} className={`btn btn--primary form__button ${loading ? 'disabled' : ''}`}>{loading ? "Processing" : "Signup"}</button>
           <Link className="auth-switch" to={"/login"}>Already have an account? Login</Link>
         </form>
       </div>

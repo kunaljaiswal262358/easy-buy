@@ -7,6 +7,7 @@ const Login = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState({ email: "", password: ""  });
   const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -42,6 +43,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (checkError()) return;
+    setLoading(true)
 
     try {
       const result = await axios.post(process.env.REACT_APP_API_ENDPOINT+"/users/login",user)
@@ -53,6 +55,7 @@ const Login = () => {
       if(error.response) setError({generic: error.response.data})
       else setError({generic: "Service is unavailable"})
       }
+      setLoading(false)
   };
 
   useEffect(() => {
@@ -85,7 +88,7 @@ const Login = () => {
           />
           {error.password && <p className="form__error">{error.password}</p>}
           {error.generic && <p className="form__error">{error.generic}</p>}
-          <button className="btn btn--primary form__button">Login</button>
+          <button disabled={loading} className={`btn btn--primary form__button ${loading ? 'diabled' : ''}`}>{loading ? "Processing" : "Login"}</button>
           <Link className="auth-switch" to={"/signup"}>Do not have an Account? SignUp</Link>
         </form>
       </div>

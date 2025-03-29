@@ -45,8 +45,7 @@ function App() {
       );
 
       setProducts([...products, data])
-     
-      toast.success("Product added successfully!")
+     toast.success("Product added!")
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong!")
@@ -83,7 +82,6 @@ function App() {
           }
         }
       );
-      toast.success("Product Edited successfully!");
     } catch(error) {
       console.log(error)
       toast.error("Something went Wrong!");
@@ -107,7 +105,6 @@ function App() {
     
     try {
       await axios.delete(process.env.REACT_APP_API_ENDPOINT+"/products/"+product._id);
-      toast.success("Product deleted!")
     } catch(error) {
       setProducts(original)
       toast.error("Something went wrong!")
@@ -222,22 +219,28 @@ function App() {
       console.log(error)
     }
   }
-
-  const populateItems = () => {
+  
+  const populateItems = (products) => {
     const items = JSON.parse(localStorage.getItem("items")) || [];
-    
-    setItems(items);
+
+   for (const item of items) 
+      item.product = products.find(p=> p._id === item.product._id)
+   setItems(items)
   };
 
   useEffect(() => {
-    populateItems()
+    populateItems(products)
+  }, [products])
+  
+  
+  useEffect(() => {
+    fetchProducts()
     const token = localStorage.getItem("token");
     if (token) {
       const { _id, isAdmin } = jwt.read(token).claim;
       setUser({_id, isAdmin})
       populateUserDetails(_id)
     }
-    fetchProducts()
   }, []);
   return (
     <>
